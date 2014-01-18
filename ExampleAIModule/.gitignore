@@ -5,5 +5,5 @@
 *.exe
 *.user
 *.pdb
-Debug/
-Release/
+Debug/*
+Release/*
