@@ -16,7 +16,7 @@ public:
   virtual void onStart();
   virtual void onEnd(bool isWinner);
   virtual void onFrame();
-  virtual int scout();
+  virtual void scout();
   virtual void onUnitDiscover(BWAPI::Unit* unit);
   virtual void onUnitEvade(BWAPI::Unit* unit);
   virtual void onUnitShow(BWAPI::Unit* unit);

@@ -1,12 +1,16 @@
 #include "ExampleAIModule.h"
 using namespace BWAPI;
 
+const int TIME_SCOUT = 150;
+
 bool analyzed;
 bool analysis_just_finished;
 Position position_home;
+Position position_enemy_home;
 BWTA::Region* home;
 BWTA::Region* enemy_base;
 int count_frame = 0;
+
 
 void ExampleAIModule::onStart()
 {
@@ -86,8 +90,9 @@ void ExampleAIModule::onEnd(bool isWinner)
   }
 }
 
-int ExampleAIModule::scout()
+void ExampleAIModule::scout()
 {
+	bool queued = false;
 	//sending a worker scout randomly
 	for(std::set<Unit*>::const_iterator i=Broodwar->self()->getUnits().begin();i!=Broodwar->self()->getUnits().end();i++)
 	{
@@ -101,13 +106,20 @@ int ExampleAIModule::scout()
 				Position * p = new Position(it->x()*32, it->y()*32);
 				if(position_home.getApproxDistance(*p) > 100)
 				{	
-					(*i)->rightClick(*p);
-					return 1;
+					if(!queued)
+					{
+						(*i)->rightClick(*p);
+						queued = true;
+					}
+					else
+					{
+						(*i)->rightClick(*p, true);
+					}
 				}
-			}	
+			}
+			break;
 		}
 	}
-	return 0;
 }
 
 void ExampleAIModule::onFrame()
@@ -116,7 +128,7 @@ void ExampleAIModule::onFrame()
   count_frame++;
 
   //scouting at X frames
-  if(count_frame == 150){
+  if(count_frame == TIME_SCOUT){
 	scout();
   }
 
@@ -171,26 +183,32 @@ void ExampleAIModule::onFrame()
 
 void ExampleAIModule::onUnitDiscover(BWAPI::Unit* unit)
 {
-  if (!Broodwar->isReplay() && Broodwar->getFrameCount()>1)
-    Broodwar->sendText("A %s [%x] has been discovered at (%d,%d)",unit->getType().getName().c_str(),unit,unit->getPosition().x(),unit->getPosition().y());
+  //if (!Broodwar->isReplay() && Broodwar->getFrameCount()>1)
+    //Broodwar->sendText("A %s [%x] has been discovered at (%d,%d)",unit->getType().getName().c_str(),unit,unit->getPosition().x(),unit->getPosition().y());
+  //if we have succesfully discovered the enemy base
+  if (unit->getType().isResourceDepot() && unit->getPlayer()->isEnemy(Broodwar->self()) )
+  {
+	  position_enemy_home = unit->getPosition();
+	  //Broodwar->sendText("POSITION ENEMY : %d", position_enemy_home);
+  }
 }
 
 void ExampleAIModule::onUnitEvade(BWAPI::Unit* unit)
 {
-  if (!Broodwar->isReplay() && Broodwar->getFrameCount()>1)
-    Broodwar->sendText("A %s [%x] was last accessible at (%d,%d)",unit->getType().getName().c_str(),unit,unit->getPosition().x(),unit->getPosition().y());
+  //if (!Broodwar->isReplay() && Broodwar->getFrameCount()>1)
+    //Broodwar->sendText("A %s [%x] was last accessible at (%d,%d)",unit->getType().getName().c_str(),unit,unit->getPosition().x(),unit->getPosition().y());
 }
 
 void ExampleAIModule::onUnitShow(BWAPI::Unit* unit)
 {
-  if (!Broodwar->isReplay() && Broodwar->getFrameCount()>1)
-    Broodwar->sendText("A %s [%x] has been spotted at (%d,%d)",unit->getType().getName().c_str(),unit,unit->getPosition().x(),unit->getPosition().y());
+  //if (!Broodwar->isReplay() && Broodwar->getFrameCount()>1)
+    //Broodwar->sendText("A %s [%x] has been spotted at (%d,%d)",unit->getType().getName().c_str(),unit,unit->getPosition().x(),unit->getPosition().y());
 }
 
 void ExampleAIModule::onUnitHide(BWAPI::Unit* unit)
 {
-  if (!Broodwar->isReplay() && Broodwar->getFrameCount()>1)
-    Broodwar->sendText("A %s [%x] was last seen at (%d,%d)",unit->getType().getName().c_str(),unit,unit->getPosition().x(),unit->getPosition().y());
+  //if (!Broodwar->isReplay() && Broodwar->getFrameCount()>1)
+    //Broodwar->sendText("A %s [%x] was last seen at (%d,%d)",unit->getType().getName().c_str(),unit,unit->getPosition().x(),unit->getPosition().y());
 }
 
 void ExampleAIModule::onUnitCreate(BWAPI::Unit* unit)
