@@ -1,4 +1,5 @@
 #include "ExampleAIModule.h"
+#include "Buildings.h"
 using namespace BWAPI;
 
 bool analyzed;
@@ -91,7 +92,7 @@ int ExampleAIModule::scout()
 	//sending a worker scout randomly
 	for(std::set<Unit*>::const_iterator i=Broodwar->self()->getUnits().begin();i!=Broodwar->self()->getUnits().end();i++)
 	{
-		if ((*i)->getType().isWorker())
+		if ((*i)->getType().isWorker() && (*i)->isCompleted())
 		{
 			std::set<TilePosition> locations = Broodwar->getStartLocations();
 			std::set<TilePosition>::iterator it;
@@ -100,7 +101,7 @@ int ExampleAIModule::scout()
 				//x32 in order to "convert" tile_position into position
 				Position * p = new Position(it->x()*32, it->y()*32);
 				if(position_home.getApproxDistance(*p) > 100)
-				{	
+				{
 					(*i)->rightClick(*p);
 					return 1;
 				}
@@ -118,6 +119,19 @@ void ExampleAIModule::onFrame()
   //scouting at X frames
   if(count_frame == 150){
 	scout();
+  }
+  if(count_frame == 800){
+	  Broodwar->sendText("Building !");
+	  Unit* builder;
+	  for(std::set<Unit*>::const_iterator i=Broodwar->self()->getUnits().begin();i!=Broodwar->self()->getUnits().end();i++)
+	  {
+		  if((*i)->getType().isWorker() && (*i)->isCompleted())
+		  {
+			  builder = *i;
+			  break;
+		  }
+	  }
+	  build_in_main_base(builder, UnitTypes::Terran_Supply_Depot);
   }
 
   if (show_visibility_data)
