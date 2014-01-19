@@ -111,13 +111,61 @@ int ExampleAIModule::scout()
 	return 0;
 }
 
+void ExampleAIModule::gestionDrones()
+{
+	for(std::set<Unit*>::const_iterator i=Broodwar->self()->getUnits().begin();i!=Broodwar->self()->getUnits().end();i++)
+	{
+		if ((*i)->getType().isWorker())
+		{
+			if ((*i)->isIdle())
+			{
+				Unit* closestMineral=NULL;
+				for(std::set<Unit*>::iterator m=Broodwar->getMinerals().begin();m!=Broodwar->getMinerals().end();m++)
+				{
+				  if (closestMineral==NULL || (*i)->getDistance(*m)<(*i)->getDistance(closestMineral))
+					closestMineral=*m;
+				}
+				if (closestMineral!=NULL)
+				  (*i)->rightClick(closestMineral);
+			}
+		}
+	}
+}
+
+void ExampleAIModule::gestionBases()
+{
+	for(std::set<Unit*>::const_iterator i=Broodwar->self()->getUnits().begin();i!=Broodwar->self()->getUnits().end();i++)
+	{
+		if ((*i)->getType().isResourceDepot())
+		{
+			if ((*i)->isIdle())
+			{
+				//if this is a center, tell it to build the appropiate type of worker
+				if ((*i)->getType().getRace()!=Races::Zerg)
+				{
+				  (*i)->train(Broodwar->self()->getRace().getWorker());
+				}
+				else //if we are Zerg, we need to select a larva and morph it into a drone
+				{
+				  std::set<Unit*> myLarva=(*i)->getLarva();
+				  if (myLarva.size()>0)
+				  {
+					Unit* larva=*myLarva.begin();
+					larva->morph(UnitTypes::Zerg_Drone);
+				  }
+				}
+			}
+		}
+	}
+}
+
 void ExampleAIModule::onFrame()
 {
-  //conting frame (14.93 FPS)
+  //conting frame (14.93 FPS) //ça dépend du PC normalement. Ce n'est pas fiable.
   count_frame++;
 
   //scouting at X frames
-  if(count_frame == 150){
+  if(count_frame == 30){
 	scout();
   }
   if(count_frame == 800){
@@ -133,6 +181,10 @@ void ExampleAIModule::onFrame()
 	  }
 	  build_in_main_base(builder, UnitTypes::Terran_Supply_Depot);
   }
+
+  gestionDrones();
+
+  gestionBases();
 
   if (show_visibility_data)
     drawVisibilityData();
