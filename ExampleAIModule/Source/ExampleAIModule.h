@@ -17,6 +17,8 @@ public:
   virtual void onEnd(bool isWinner);
   virtual void onFrame();
   virtual void scout();
+  virtual void gestionDrones();
+  virtual void gestionBases();
   virtual void onUnitDiscover(BWAPI::Unit* unit);
   virtual void onUnitEvade(BWAPI::Unit* unit);
   virtual void onUnitShow(BWAPI::Unit* unit);
