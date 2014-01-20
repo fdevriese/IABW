@@ -1,6 +1,7 @@
 #include "ExampleAIModule.h"
 #include "Buildings.h"
 #include "Army.h"
+#include "RessourceManager.h"
 using namespace BWAPI;
 
 const int TIME_SCOUT = 30;
@@ -55,20 +56,20 @@ void ExampleAIModule::onStart()
     {
       if ((*i)->getType().isWorker())
       {
-        Unit* closestMineral=NULL;
+        /*Unit* closestMineral=NULL;
         for(std::set<Unit*>::iterator m=Broodwar->getMinerals().begin();m!=Broodwar->getMinerals().end();m++)
         {
           if (closestMineral==NULL || (*i)->getDistance(*m)<(*i)->getDistance(closestMineral))
             closestMineral=*m;
         }
         if (closestMineral!=NULL)
-          (*i)->rightClick(closestMineral);
+          (*i)->rightClick(closestMineral);*/
       }
       else if ((*i)->getType().isResourceDepot())
 		  position_home = (*i)->getPosition();
       {
         //if this is a center, tell it to build the appropiate type of worker
-        if ((*i)->getType().getRace()!=Races::Zerg)
+        /*if ((*i)->getType().getRace()!=Races::Zerg)
         {
           (*i)->train(Broodwar->self()->getRace().getWorker());
         }
@@ -80,10 +81,19 @@ void ExampleAIModule::onStart()
             Unit* larva=*myLarva.begin();
             larva->morph(UnitTypes::Zerg_Drone);
           }
-        }
+        }*/
       }
     }
   }
+  ressourceManager.addToQueue(UnitTypes::Terran_SCV);
+  ressourceManager.addToQueue(UnitTypes::Terran_SCV);
+  ressourceManager.addToQueue(UnitTypes::Terran_SCV);
+  ressourceManager.addToQueue(UnitTypes::Terran_SCV);
+  ressourceManager.addToQueue(UnitTypes::Terran_Supply_Depot);
+  ressourceManager.addToQueue(UnitTypes::Terran_Barracks);
+  ressourceManager.addToQueue(UnitTypes::Terran_SCV);
+  ressourceManager.addToQueue(UnitTypes::Terran_Marine);
+  ressourceManager.addToQueue(UnitTypes::Terran_Marine);
 }
 
 void ExampleAIModule::onEnd(bool isWinner)
@@ -184,23 +194,11 @@ void ExampleAIModule::onFrame()
   if(count_frame == TIME_SCOUT){
 	scout();
   }
-  if(count_frame == 800){
-	  Broodwar->sendText("Building !");
-	  Unit* builder;
-	  for(std::set<Unit*>::const_iterator i=Broodwar->self()->getUnits().begin();i!=Broodwar->self()->getUnits().end();i++)
-	  {
-		  if((*i)->getType().isWorker() && (*i)->isCompleted())
-		  {
-			  builder = *i;
-			  break;
-		  }
-	  }
-	  build_in_main_base(builder, UnitTypes::Terran_Supply_Depot);
-  }
 
   gestionDrones();
+  ressourceManager.purchaseUnit();
 
-  gestionBases();
+  //gestionBases();
 
   if (show_visibility_data)
     drawVisibilityData();
@@ -300,6 +298,11 @@ void ExampleAIModule::onUnitCreate(BWAPI::Unit* unit)
         Broodwar->sendText("%.2d:%.2d: %s creates a %s",minutes,seconds,unit->getPlayer()->getName().c_str(),unit->getType().getName().c_str());
       }
     }
+
+	if(unit->getType().isBuilding())
+	{
+		ressourceManager.confirmConstruction(unit->getType());
+	}
   }
 }
 

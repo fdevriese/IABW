@@ -3,6 +3,7 @@
 
 #include <BWTA.h>
 #include <windows.h>
+#include "RessourceManager.h"
 
 extern bool analyzed;
 extern bool analysis_just_finished;
@@ -36,4 +37,6 @@ public:
   void showForces();
   bool show_bullets;
   bool show_visibility_data;
+protected:
+	RessourceManager ressourceManager;
 };

@@ -87,7 +87,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="move &quot;F:\\Documents\\5IF - Master\\IABW\\Debug\\ExampleAIModule.dll&quot; &quot;F:\\Documents\\5IF - Master\\Starcraft Portable\\bwapi-data\AI\\ExampleAIModule.dll&quot;"
+				CommandLine="move &quot;C:\\Users\\Jeremy\\Documents\\GitHub\\IABW\\Debug\\ExampleAIModule.dll&quot; &quot;C:\\Program Files\\Starcraft Portable\\bwapi-data\\AI\\ExampleAIModule.dll&quot;"
 			/>
 		</Configuration>
 		<Configuration
@@ -192,6 +192,10 @@
 				RelativePath=".\Source\ExampleAIModule.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\Source\RessourceManager.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -208,6 +212,10 @@
 			</File>
 			<File
 				RelativePath=".\Source\ExampleAIModule.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\RessourceManager.h"
 				>
 			</File>
 		</Filter>
