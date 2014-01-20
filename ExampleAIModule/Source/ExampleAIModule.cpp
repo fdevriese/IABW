@@ -1,5 +1,6 @@
 #include "ExampleAIModule.h"
 #include "Buildings.h"
+#include "Army.h"
 using namespace BWAPI;
 
 const int TIME_SCOUT = 30;
@@ -11,6 +12,8 @@ Position position_enemy_home;
 BWTA::Region* home;
 BWTA::Region* enemy_base;
 int count_frame = 0;
+Unit* worker_scout = NULL;
+Army army1;
 
 
 void ExampleAIModule::onStart()
@@ -118,6 +121,7 @@ void ExampleAIModule::scout()
 					}
 				}
 			}
+			worker_scout = (*i);
 			break;
 		}
 	}
@@ -255,6 +259,7 @@ void ExampleAIModule::onUnitDiscover(BWAPI::Unit* unit)
   if (unit->getType().isResourceDepot() && unit->getPlayer()->isEnemy(Broodwar->self()) )
   {
 	  position_enemy_home = unit->getPosition();
+	  worker_scout->rightClick(position_home);
 	  //Broodwar->sendText("POSITION ENEMY : %d", position_enemy_home);
   }
 }
