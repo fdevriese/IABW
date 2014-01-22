@@ -5,6 +5,6 @@
 
 int build(BWAPI::Unit* builder, BWAPI::UnitType building_type, BWAPI::TilePosition p);
 int build_in_main_base(BWAPI::Unit* builder, BWAPI::UnitType building_type);
-
+int expand(BWAPI::Unit* builder);
 
 #endif

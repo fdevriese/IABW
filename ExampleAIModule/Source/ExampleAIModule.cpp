@@ -15,6 +15,7 @@ BWTA::Region* enemy_base;
 int count_frame = 0;
 Unit* worker_scout = NULL;
 Army army1;
+std::set<TilePosition> spotted_minerals;
 
 
 void ExampleAIModule::onStart()
@@ -89,11 +90,12 @@ void ExampleAIModule::onStart()
   ressourceManager.addToQueue(UnitTypes::Terran_SCV);
   ressourceManager.addToQueue(UnitTypes::Terran_SCV);
   ressourceManager.addToQueue(UnitTypes::Terran_SCV);
-  ressourceManager.addToQueue(UnitTypes::Terran_Supply_Depot);
-  ressourceManager.addToQueue(UnitTypes::Terran_Barracks);
+  //ressourceManager.addToQueue(UnitTypes::Terran_Supply_Depot);
+  //ressourceManager.addToQueue(UnitTypes::Terran_Barracks);
   ressourceManager.addToQueue(UnitTypes::Terran_SCV);
-  ressourceManager.addToQueue(UnitTypes::Terran_Marine);
-  ressourceManager.addToQueue(UnitTypes::Terran_Marine);
+  //ressourceManager.addToQueue(UnitTypes::Terran_Marine);
+  //ressourceManager.addToQueue(UnitTypes::Terran_Marine);
+  ressourceManager.addToQueue(UnitTypes::Terran_Command_Center);
 }
 
 void ExampleAIModule::onEnd(bool isWinner)
@@ -195,6 +197,10 @@ void ExampleAIModule::onFrame()
 	scout();
   }
 
+  if(count_frame == 200)
+  {
+		expand(*Broodwar->self()->getUnits().begin());
+  }
   gestionDrones();
   ressourceManager.purchaseUnit();
 
@@ -259,6 +265,10 @@ void ExampleAIModule::onUnitDiscover(BWAPI::Unit* unit)
 	  position_enemy_home = unit->getPosition();
 	  worker_scout->rightClick(position_home);
 	  //Broodwar->sendText("POSITION ENEMY : %d", position_enemy_home);
+  }
+  if(unit->getType().isMineralField() && count_frame > 1)
+  {
+	  spotted_minerals.insert(unit->getTilePosition());
   }
 }
 

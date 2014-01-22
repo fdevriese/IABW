@@ -10,7 +10,6 @@ Unit* getWorker()
 	{
 		if ((*i)->getType().isWorker() && ((*i)->isGatheringMinerals() || (*i)->isIdle()))
 		{
-			Broodwar->sendText("worker : %s", (*i)->getType().getName());
 			return *i;
 		}
 	}
@@ -51,7 +50,7 @@ void RessourceManager::purchaseUnit()
 			Unit* worker = getWorker();
 			if(worker == NULL)
 				return;
-			if(build_in_main_base(worker, ut))
+			if(ut == BWAPI::UnitTypes::Terran_Command_Center ? expand(worker) : build_in_main_base(worker, ut))
 			{
 				pqueue.pop();
 				reservedMinerals += ut.mineralPrice();
