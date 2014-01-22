@@ -47,6 +47,7 @@ void RessourceManager::purchaseUnit()
 	{
 		if(ut.isBuilding())
 		{
+			Broodwar->printf("trying to build something\n");
 			Unit* worker = getWorker();
 			if(worker == NULL)
 				return;

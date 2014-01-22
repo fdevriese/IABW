@@ -16,6 +16,7 @@ int count_frame = 0;
 Unit* worker_scout = NULL;
 Army army1;
 std::set<TilePosition> spotted_minerals;
+bool bSupplyInQueue = false;
 
 
 void ExampleAIModule::onStart()
@@ -90,12 +91,12 @@ void ExampleAIModule::onStart()
   ressourceManager.addToQueue(UnitTypes::Terran_SCV);
   ressourceManager.addToQueue(UnitTypes::Terran_SCV);
   ressourceManager.addToQueue(UnitTypes::Terran_SCV);
-  //ressourceManager.addToQueue(UnitTypes::Terran_Supply_Depot);
-  //ressourceManager.addToQueue(UnitTypes::Terran_Barracks);
+  ressourceManager.addToQueue(UnitTypes::Terran_Supply_Depot);
+  ressourceManager.addToQueue(UnitTypes::Terran_Barracks);
   ressourceManager.addToQueue(UnitTypes::Terran_SCV);
-  //ressourceManager.addToQueue(UnitTypes::Terran_Marine);
-  //ressourceManager.addToQueue(UnitTypes::Terran_Marine);
-  ressourceManager.addToQueue(UnitTypes::Terran_Command_Center);
+  ressourceManager.addToQueue(UnitTypes::Terran_Marine);
+  ressourceManager.addToQueue(UnitTypes::Terran_Marine);
+  //ressourceManager.addToQueue(UnitTypes::Terran_Command_Center);
 }
 
 void ExampleAIModule::onEnd(bool isWinner)
@@ -197,12 +198,35 @@ void ExampleAIModule::onFrame()
 	scout();
   }
 
-  if(count_frame == 200)
+  /*if(count_frame == 200)
   {
 		expand(*Broodwar->self()->getUnits().begin());
-  }
+  }*/
   gestionDrones();
   ressourceManager.purchaseUnit();
+
+  if ((Broodwar->self()->supplyUsed()+(UnitTypes::Terran_Marine.supplyRequired())) <  Broodwar->self()->supplyTotal())
+  {
+		ressourceManager.addToQueue(UnitTypes::Terran_Marine);
+		bSupplyInQueue = false;
+  }
+  else if(!bSupplyInQueue)
+  {
+		ressourceManager.addToQueue(UnitTypes::Terran_Supply_Depot,1);
+		bSupplyInQueue = true;
+  }
+
+  // On attaque
+  if( Broodwar->self()->supplyUsed() > 45 ) //bug on attaque pas réellement à ce moment là
+  {
+	for(std::set<Unit*>::const_iterator i=Broodwar->self()->getUnits().begin();i!=Broodwar->self()->getUnits().end();i++)
+	{
+		if ((*i)->getType().canAttack() && !(*i)->getType().isWorker() && (*i)->isIdle())
+		{
+			(*i)->attack(position_enemy_home);
+		}
+	}
+  }
 
   //gestionBases();
 
